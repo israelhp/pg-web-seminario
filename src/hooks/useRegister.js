@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import signupService from '../services/signup'
 
-const useResponse = () => {
+const useRegister = () => {
   const [res, setRes] = useState({ message: '' })
   const [load, setLoad] = useState(0)
 
@@ -37,4 +37,4 @@ const useResponse = () => {
   }
 }
 
-export default useResponse
+export default useRegister
