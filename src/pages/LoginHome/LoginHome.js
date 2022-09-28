@@ -1,61 +1,55 @@
+/* eslint-disable no-unused-vars */
 import '../../styles/styles.css'
-import { Link } from 'react-router-dom'
+import SvgFood from '../../assets/svg/food2.svg'
+import { Link, useNavigate } from 'react-router-dom'
 import Button from 'react-bootstrap/Button'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Alert from 'react-bootstrap/Alert'
-import useResponse from '../../hooks/useRegister'
 import { useState } from 'react'
+import useAuth from '../../hooks/useAuth'
+import { loginAuth } from '../../redux/states/auth'
+import { useDispatch, useSelector } from 'react-redux'
 
-const Signup = () => {
-  const { signup, load, res } = useResponse()
+const LoginHome = () => {
+  const navigate = useNavigate()
   const [error, setError] = useState(0)
   const [email, setEmail] = useState('')
-  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState('')
-  const [dpi, setDpi] = useState('')
-
-  const clean = () => {
-    setEmail('')
-    setUsername('')
-    setPassword('')
-    setRole('')
-    setDpi('')
-  }
+  const { login, res, load } = useAuth()
+  const authState = useSelector(store => store.auth)
+  const dispatch = useDispatch()
 
   const onClick = e => {
     e.preventDefault()
-    signup(email, username, password, role, dpi, setError)
-    clean()
+    login(email, password, setError).then(response => {
+      dispatch(loginAuth({ token: response.token }))
+    })
   }
 
   return (
     <section className="vh-100">
       <Container fluid className="h-custom">
         <Row className="d-flex justify-content-center align-items-center h-100">
+          <Col
+            md={9}
+            lg={6}
+            xl={4}
+            className="d-flex justify-content-center align-items-center"
+          >
+            <img src={SvgFood} className="img-fluid" alt="Sample image" />
+          </Col>
           <Col md={8} lg={6} xl={4}>
             <Container fluid className="mb-3">
               <Row>
                 <Col>
-                  <h1 className="text-center text-primary"> Registrar </h1>
+                  <h1 className="text-center text-primary"> Iniciar sesion </h1>
                 </Col>
               </Row>
             </Container>
             <Form onSubmit={onClick}>
-              <Form.Group className="mb-3" controlId="formBasicDpi">
-                <Form.Control
-                  required
-                  type="number"
-                  placeholder="DPI"
-                  value={dpi}
-                  onChange={e => {
-                    if (e.target.value.length <= 13) setDpi(e.target.value)
-                  }}
-                />
-              </Form.Group>
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Control
                   required
@@ -65,17 +59,6 @@ const Signup = () => {
                   onChange={e => setEmail(e.target.value)}
                 />
               </Form.Group>
-
-              <Form.Group className="mb-3" controlId="formBasicUsername">
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="Nombre del usuario"
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                />
-              </Form.Group>
-
               <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Control
                   required
@@ -83,32 +66,23 @@ const Signup = () => {
                   placeholder="Contraseña"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  pattern="[A-Za-z][A-Za-z0-9]*[0-9][A-Za-z0-9]*"
-                  title="Una contraseña válida es un conjuto de caracteres, donde cada uno consiste de una letra mayúscula o minúscula, o un dígito. La contraseña debe empezar con una letra y contener al menor un dígito"
                 />
               </Form.Group>
-              <Form.Select
-                required
-                className="text-secondary mb-4"
-                aria-label="Default select example"
-                value={role}
-                onChange={e => setRole(e.target.value)}
-              >
-                <option>Tipo de usuario</option>
-                <option value="1">Cliente</option>
-                <option value="2">Repartidor</option>
-              </Form.Select>
-              {error === 1 || error === 2 ? (
-                <Alert variant={error === 2 ? 'success' : 'danger'}>
-                  <Alert.Heading>
-                    {error === 2 ? 'Completado' : 'Error '}
-                  </Alert.Heading>
+              <div className="d-flex justify-content-between align-items-center">
+                <Form.Group controlId="formBasicCheckbox">
+                  <Form.Check type="checkbox" label="Remember me" />
+                </Form.Group>
+                <Link to="password/reset" className="text-body">
+                  Forgot password?
+                </Link>
+              </div>
+              {error === 1 ? (
+                <Alert className="mt-4" variant="danger">
                   <p>{res.message}</p>
                 </Alert>
               ) : (
                 ''
               )}
-
               <div className="mt-4 pt-2">
                 <Container>
                   <Row>
@@ -118,7 +92,7 @@ const Signup = () => {
                       variant="primary"
                       size="lg"
                     >
-                      Confirmar
+                      Iniciar sesion
                     </Button>
                   </Row>
                 </Container>
@@ -126,9 +100,9 @@ const Signup = () => {
                   <p className="text-center fw-bold mx-3 mb-0"></p>
                 </div>
                 <p className="medium fw-bold mt-2 pt-1 mb-0 text-center">
-                  ¿Quieres ingresar a tu usuario?{' '}
-                  <Link to="../" className="link-danger">
-                    Inicia sesion
+                  ¿Tienes tu cuenta?{' '}
+                  <Link to="accounts/signup" className="link-danger">
+                    Registrate
                   </Link>
                 </p>
               </div>
@@ -156,4 +130,4 @@ const Signup = () => {
   )
 }
 
-export default Signup
+export default LoginHome
