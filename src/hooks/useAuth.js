@@ -43,6 +43,7 @@ const useAuth = () => {
             setRes({ message: res.data.message })
             removeLocalStorage('token')
             removeLocalStorage('role')
+            removeLocalStorage('Carrito')
             setLoad(0)
             setError(2)
             break
