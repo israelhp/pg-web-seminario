@@ -3,10 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import NavBar from '../../components/NavBar/NavBar'
 
 const Home = () => {
-  return (
-    <div>
-    </div>
-  )
+  return <div>Hola</div>
 }
 
 export default Home

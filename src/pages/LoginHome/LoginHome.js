@@ -8,7 +8,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Alert from 'react-bootstrap/Alert'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import useAuth from '../../hooks/useAuth'
 import { loginAuth } from '../../redux/states/auth'
 import { useDispatch, useSelector } from 'react-redux'
@@ -22,10 +22,14 @@ const LoginHome = () => {
   const authState = useSelector(store => store.auth)
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    if (authState.token !== null) navigate('/')
+  }, [authState])
+
   const onClick = e => {
     e.preventDefault()
     login(email, password, setError).then(response => {
-      dispatch(loginAuth({ token: response.token }))
+      dispatch(loginAuth({ token: response.token, role: response.role }))
     })
   }
 
