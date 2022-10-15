@@ -1,14 +1,15 @@
 import { useCallback, useState } from 'react'
 import SaveOrderService from '../services/SaveOrder'
 
+
 const useAddOrder = () => {
   const [res, setRes] = useState({ message: '' })
   const [load, setLoad] = useState(0)
 
   const saveorder = useCallback(
-    (name, nit, PaymentId, setError) => {
+    (name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, CartList, setError) => {
       setLoad(1)
-      SaveOrderService(name, nit, PaymentId)
+      SaveOrderService(name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, CartList)
         .then(res => {
           switch (res.status) {
             case 200:

@@ -6,19 +6,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import { formatCurrency } from '../../utilities/formatCurrency';
-import { CartSet, CartSum, CartDel } from '../../redux/states/Cart'
+import { CartSet, CartSum, CartDel, CartClean } from '../../redux/states/Cart'
 import CartDetail from '../../components/modal/detail'
-import useResponse from '../../hooks/useAddPayment'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Alert from 'react-bootstrap/Alert'
 import useResponseOrder from '../../hooks/useAddOrder'
+import { clear } from '@testing-library/user-event/dist/clear';
 
 const ModalData = ({ show, handleClose, handleBack }) => {
     const cartState = useSelector(store => store.cart)
     useEffect(() => { }, [cartState])
+    const dispatch = useDispatch()
 
     const [checked, setChecked] = useState(false);
 
@@ -30,19 +31,18 @@ const ModalData = ({ show, handleClose, handleBack }) => {
     let CartList = []
 
     if (cartState.Lista !== null) {
-      CartList = Object.values(cartState.Lista)
+        CartList = Object.values(cartState.Lista)
     } else {
-      CartList = []
+        CartList = []
     }
 
     let amount = 0.00;
     CartList.forEach(function (numero) {
-        amount  += numero.price * numero.quantity;
+        amount += numero.price * numero.quantity;
     });
 
     // FORM CONTENT
-    const { savepayment, load, res } = useResponse()
-    const { saveorder, loadOrder, resOrder } = useResponseOrder()
+    const { saveorder, load, res } = useResponseOrder()
     const [error, setError] = useState(0)
     const [name, setName] = useState('')
     const [nit, setNit] = useState('')
@@ -55,9 +55,9 @@ const ModalData = ({ show, handleClose, handleBack }) => {
     const [expirationDate, setExpirationDate] = useState('')
 
     const clean = () => {
+        setPaymentType('1')
         setName('')
         setNit('')
-        setPaymentType('')
         setCard('')
         setSecurityCod('')
         setExpirationDate('')
@@ -75,25 +75,226 @@ const ModalData = ({ show, handleClose, handleBack }) => {
 
     const changePaymentType = e => {
         cleanCard()
-        setPaymentType(e.currentTarget.value)   
+        setPaymentType(e.currentTarget.value)
     }
 
-    const onClick = e => {
+    function sleep(time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    const onClick = async e => {
         e.preventDefault()
-        savepayment(name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, setError)
-        console.log(res.message)
-        saveorder(name, nit, res.message, setError)
-        console.log(resOrder.message)
-        clean()
+        CartList = []
+        for (let i = 0, len = cartState.Lista.length; i < len; ++i) {
+            CartList.push({
+                LineNumber: i + 1,
+                comment: "",
+                productId: cartState.Lista[i].id,
+                amount: cartState.Lista[i].quantity,
+                price: cartState.Lista[i].price,
+                lineTotal: cartState.Lista[i].price * cartState.Lista[i].quantity
+            })
+        }
+        saveorder(name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, CartList, setError)
+        dispatch(CartClean())
+    }
+
+
+    const exitOrdenExitosa = () => {
+        handleClose()
+        setError(0)
+        clean()     
     }
 
     return (
-        <Modal show={show} onHide={handleClose} dialogClassName="modal-90w"
-            aria-labelledby="example-custom-modal-styling-title">
-            <Modal.Header closeButton>
-                <Modal.Title>Informacion de Facturacion</Modal.Title>
-            </Modal.Header>
-            {/* <Modal.Body>
+        <>
+            {error === 1 || error === 2 ? (
+                <>
+                    <Modal show={show} onHide={() => exitOrdenExitosa()} dialogClassName="modal-90w"
+                        aria-labelledby="example-custom-modal-styling-title">
+                        <Modal.Header closeButton>
+                            <Modal.Title>Orden enviada</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Alert variant={error === 2 ? 'success' : 'danger'}>
+                                <Alert.Heading>
+                                    {error === 2 ? 'Completado' : 'Error '}
+                                </Alert.Heading>
+                                <p>{"¡Orden almacenada con exito!"}</p>
+                                <p>{"Numero de orden: " + res.message}</p>
+                            </Alert>
+                            <Container>
+                                <Row>
+                                    <Button
+                                        variant="primary"
+                                        size="lg"
+                                        onClick={() => exitOrdenExitosa()}
+                                    >
+                                        Seguir comprando
+                                    </Button>
+                                </Row>
+                            </Container>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleBack}>
+                                Volver
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
+            ) : (
+                <>
+                    <Modal show={show} onHide={handleClose} dialogClassName="modal-90w"
+                        aria-labelledby="example-custom-modal-styling-title">
+                        <Modal.Header closeButton>
+                            <Modal.Title>Informacion de Facturacion</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form onSubmit={onClick}>
+                                <Form.Group className="mb-3" controlId="formBasicPaymentType">
+                                    <h4>Forma de pago</h4>
+                                    <div style={{ textAlign: "center" }}>
+                                        <ButtonGroup style={{ width: "-webkit-fill-available" }}>
+                                            {radios.map((radio, idx) => (
+                                                <ToggleButton
+                                                    key={idx}
+                                                    id={`radio-${idx}`}
+                                                    type="radio"
+                                                    variant={'outline-success'}
+                                                    name="radio"
+                                                    value={radio.value}
+                                                    checked={paymentType === radio.value}
+                                                    onChange={(e) => changePaymentType(e)}
+                                                >
+                                                    {radio.name}
+                                                </ToggleButton>
+                                            ))}
+                                        </ButtonGroup>
+                                    </div>
+                                </Form.Group>
+                                <h4>Informacion de Cliente</h4>
+                                <Form.Group className="mb-3" controlId="formBasicName">
+                                    <Form.Control
+                                        required
+                                        type="text"
+                                        placeholder="Nombre completo"
+                                        value={name}
+                                        onChange={e => setName(e.target.value)}
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3" controlId="formBasicNit">
+                                    <Form.Control
+                                        required
+                                        type="text"
+                                        placeholder="Numero de nit"
+                                        value={nit}
+                                        pattern="((([1-9])+([0-9])*([0-9]|K))|(([1-9]+[0-9]){12,13})|(CF)|^([A-Z0-9]{3,18}))$"
+                                        title="El nit debe ser valido en la SAT"
+                                        onChange={e => setNit(e.target.value)}
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3" controlId="formBasicDireccion">
+                                    <Form.Control
+                                        required
+                                        type="text"
+                                        placeholder="Direccion"
+                                        value={direccion}
+                                        onChange={e => setDireccion(e.target.value)}
+                                    />
+                                </Form.Group>
+
+                                {paymentType === '1' ?
+                                    <>
+                                        <h4>Informacion de tarjeta</h4>
+                                        <Form.Group className="mb-3" controlId="formBasicCard">
+                                            <Form.Control
+                                                required
+                                                type="text"
+                                                placeholder="Numeracion de tarjeta"
+                                                value={card}
+                                                pattern="(([0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]))"
+                                                title="El numero debe ser valido"
+                                                onChange={e => setCard(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3" controlId="formBasicCardName">
+                                            <Form.Control
+                                                required
+                                                type="text"
+                                                placeholder="Nombre"
+                                                value={cardName}
+                                                onChange={e => setCardName(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3" controlId="formBasicSecurityCod">
+                                            <Form.Control
+                                                required
+                                                type="text"
+                                                placeholder="CVV"
+                                                pattern="(([0-9][0-9][0-9]))"
+                                                title="Formato de codigo de seguridad 'XXX' deben ser unicamente numeros"
+                                                value={securityCode}
+                                                onChange={e => setSecurityCod(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3" controlId="formBasicExpirationDate">
+                                            <Form.Control
+                                                required
+                                                type="text"
+                                                placeholder="MM/yy"
+                                                pattern="(([0-9][0-9][/][0-9][0-9]))"
+                                                title="Formato de fecha MM/yy"
+                                                value={expirationDate}
+                                                onChange={e => setExpirationDate(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                        <Form.Select
+                                            required
+                                            className="text-secondary mb-4"
+                                            aria-label="Default select example"
+                                            value={codeCard}
+                                            onChange={e => setCodeCard(e.target.value)}
+                                        >
+                                            <option value="1">VISA</option>
+                                            <option value="2">MASTERCARD</option>
+                                        </Form.Select>
+
+                                    </>
+                                    :
+                                    <></>
+                                }
+                                <div className="mt-4 pt-2">
+                                    <Container>
+                                        <Row>
+                                            <Button
+                                                disabled={load === 1 ? true : 0}
+                                                type="submit"
+                                                variant="primary"
+                                                size="lg"
+                                            >
+                                                Confirmar
+                                            </Button>
+                                        </Row>
+                                    </Container>
+                                </div>
+                            </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleBack}>
+                                Volver
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
+            )
+            }
+
+        </>
+    )
+}
+
+export default ModalData
+/* <Modal.Body>
                 <h4>Forma de pago</h4>
                 <div style={{ textAlign: "center" }}>
                     <ButtonGroup style={{ width: "-webkit-fill-available" }}>
@@ -168,158 +369,4 @@ const ModalData = ({ show, handleClose, handleBack }) => {
                         <button style={{ width: "50%", margin: "auto" }} type="submit" className="btn btn-primary" onClick={handleClose}>Pagar</button>
                     </form>
                 </Fragment>
-            </Modal.Body> */}
-
-            <Modal.Body>
-                <Form onSubmit={onClick}>
-                    <Form.Group className="mb-3" controlId="formBasicPaymentType">
-                        <h4>Forma de pago</h4>
-                        <div style={{ textAlign: "center" }}>
-                            <ButtonGroup style={{ width: "-webkit-fill-available" }}>
-                                {radios.map((radio, idx) => (
-                                    <ToggleButton
-                                        key={idx}
-                                        id={`radio-${idx}`}
-                                        type="radio"
-                                        variant={'outline-success'}
-                                        name="radio"
-                                        value={radio.value}
-                                        checked={paymentType === radio.value}
-                                        onChange={(e) => changePaymentType(e)}
-                                    >
-                                        {radio.name}
-                                    </ToggleButton>
-                                ))}
-                            </ButtonGroup>
-                        </div>
-                    </Form.Group>
-                    <h4>Informacion de Cliente</h4>
-                    <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="Nombre completo"
-                            value={name}
-                            onChange={e => setName(e.target.value)}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicNit">
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="Numero de nit"
-                            value={nit}
-                            pattern="((([1-9])+([0-9])*([0-9]|K))|(([1-9]+[0-9]){12,13})|(CF)|^([A-Z0-9]{3,18}))$"
-                            title="El nit debe ser valido en la SAT"        
-                            onChange={e => setNit(e.target.value)}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicDireccion">
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="Direccion"
-                            value={direccion}
-                            onChange={e => setDireccion(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    {paymentType === '1' ?
-                        <>
-                            <h4>Informacion de tarjeta</h4>
-                            <Form.Group className="mb-3" controlId="formBasicCard">
-                                <Form.Control
-                                    required
-                                    type="text"
-                                    placeholder="Numeracion de tarjeta"
-                                    value={card}
-                                    pattern="(([0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]))"
-                                    title="El numero debe ser valido"   
-                                    onChange={e => setCard(e.target.value)}
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formBasicCardName">
-                                <Form.Control
-                                    required
-                                    type="text"
-                                    placeholder="Nombre"
-                                    value={cardName}
-                                    onChange={e => setCardName(e.target.value)}
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formBasicSecurityCod">
-                                <Form.Control
-                                    required
-                                    type="text"
-                                    placeholder="CVV"
-                                    pattern="(([0-9][0-9][0-9]))"
-                                    title="Formato de codigo de seguridad 'XXX' deben ser unicamente numeros"  
-                                    value={securityCode}
-                                    onChange={e => setSecurityCod(e.target.value)}
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formBasicExpirationDate">
-                                <Form.Control
-                                    required
-                                    type="text"
-                                    placeholder="MM/yy"
-                                    pattern="(([0-9][0-9][/][0-9][0-9]))"
-                                    title="Formato de fecha MM/yy"  
-                                    value={expirationDate}
-                                    onChange={e => setExpirationDate(e.target.value)}
-                                />
-                            </Form.Group>
-                            <Form.Select
-                                required
-                                className="text-secondary mb-4"
-                                aria-label="Default select example"
-                                value={codeCard}
-                                onChange={e => setCodeCard(e.target.value)}
-                            >
-                                <option value="1">VISA</option>
-                                <option value="2">MASTERCARD</option>
-                            </Form.Select>
-
-                        </>
-                        :
-                        <></>
-                    }
-
-                    {error === 1 || error === 2 ? (
-                        <Alert variant={error === 2 ? 'success' : 'danger'}>
-                            <Alert.Heading>
-                                {error === 2 ? 'Completado' : 'Error '}
-                            </Alert.Heading>
-                            <p>{res.message}</p>
-                        </Alert>
-                    ) : (
-                        ''
-                    )}
-
-                    <div className="mt-4 pt-2">
-                        <Container>
-                            <Row>
-                                <Button
-                                    disabled={load === 1 ? true : 0}
-                                    type="submit"
-                                    variant="primary"
-                                    size="lg"
-                                >
-                                    Confirmar
-                                </Button>
-                            </Row>
-                        </Container>
-                    </div>
-                </Form>
-            </Modal.Body>
-
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleBack}>
-                    Volver
-                </Button>
-            </Modal.Footer>
-        </Modal>
-    )
-}
-
-export default ModalData
+            </Modal.Body> */
