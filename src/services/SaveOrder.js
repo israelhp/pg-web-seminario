@@ -3,31 +3,31 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios'
 
-const saveOrder = async (name, nit, PaymentId) => {
-
-  const cartState = useSelector(store => store.cart)
-  useEffect(() => { }, [cartState])
-
-  let CartList = []
-
-  if (cartState.Lista !== null) {
-    CartList = Object.values(cartState.Lista)
-  } else {
-    CartList = []
-  }
-
+const saveOrder = async (name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, CartList) => {
   try {
-    const data = await axios.post(`${process.env.REACT_APP_API_URL}/Orders`, {
-        currency: 'QTZ',
-        nit,
-        name,
-        observations: '',
-        date: new Date(),
-        OrderDetails: CartList, 
-        userId: 1,   
-        PaymentId,
+    // SAVE PAYMENT BEFORE ORDER
+    const data = await axios.post(`${process.env.REACT_APP_API_URL}/Payments`, {
+      name,
+      paymentType,
+      card,
+      codeCard,
+      securityCode,
+      expirationDate,
+      amount,
+    });
+
+    // SAVE ORDER NEXT TO PAYMENT
+    const data2 = await axios.post(`${process.env.REACT_APP_API_URL}/Orders`, {
+      currency: 'QTZ',
+      nit,
+      name,
+      observations: '',
+      date: new Date(),
+      OrderDetails: CartList,
+      userId: 1,
+      PaymentId : data.data.data.id,
     })
-    return data
+    return data2
   } catch (e) {
     return e.response
   }

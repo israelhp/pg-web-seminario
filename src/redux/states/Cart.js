@@ -24,10 +24,13 @@ export const cartSlice = createSlice({
     CartDel: (state, action) => {
       const temp = Object.values(state.Lista.filter(d => d.id !== action.payload.id))
       return { Lista: temp }
+    },
+    CartClean: (state, action) => {
+      return { Lista: [] }
     }
   },
 })
 
-export const { CartSet, CartDel, CartSum } = cartSlice.actions
+export const { CartSet, CartDel, CartSum, CartClean } = cartSlice.actions
 
 export default cartSlice.reducer
