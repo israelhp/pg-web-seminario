@@ -29,7 +29,13 @@ const LoginHome = () => {
   const onClick = e => {
     e.preventDefault()
     login(email, password, setError).then(response => {
-      dispatch(loginAuth({ token: response.token, role: response.role }))
+      dispatch(
+        loginAuth({
+          token: response.token,
+          role: response.role,
+          userId: response.id,
+        }),
+      )
     })
   }
 
