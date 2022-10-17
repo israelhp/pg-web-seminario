@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios'
 
-const saveOrder = async (name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, CartList) => {
+const saveOrder = async (name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, CartList, userId) => {
   try {
     // SAVE PAYMENT BEFORE ORDER
     const data = await axios.post(`${process.env.REACT_APP_API_URL}/Payments`, {
@@ -24,8 +24,8 @@ const saveOrder = async (name, nit, paymentType, card, codeCard, securityCode, e
       observations: '',
       date: new Date(),
       OrderDetails: CartList,
-      userId: 1,
-      PaymentId : data.data.data.id,
+      userId,
+      PaymentId: data.data.data.id,
     })
     return data2
   } catch (e) {

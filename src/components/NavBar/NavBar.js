@@ -17,7 +17,7 @@ const NavBarData = () => {
   const [error, setError] = useState(0)
   useEffect(() => {}, [cartState, authState])
 
-  console.log(authState)
+  // console.log(authState)
 
   const onClickLogin = e => {
     logout(authState.token, setError)
@@ -68,6 +68,11 @@ const NavBarData = () => {
                   <li className="nav-item">
                     <Link to="articulos" className="nav-link">
                       Articulos
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="ordenes" className="nav-link">
+                      Ordenes
                     </Link>
                   </li>
                 </>

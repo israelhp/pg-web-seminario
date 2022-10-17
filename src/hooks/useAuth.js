@@ -16,7 +16,7 @@ const useAuth = () => {
             setRes({ message: res.data.message })
             persistAuthState('token', res.data.data.token)
             persistAuthState('role', res.data.data.role)
-            persistAuthState('userId', res.data.data.id)
+            persistAuthState('userId', res.data.data.userId)
             setLoad(0)
             setError(2)
             break
