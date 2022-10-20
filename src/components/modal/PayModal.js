@@ -18,7 +18,9 @@ import { clear } from '@testing-library/user-event/dist/clear';
 
 const ModalData = ({ show, handleClose, handleBack }) => {
     const cartState = useSelector(store => store.cart)
+
     useEffect(() => { }, [cartState])
+
     const dispatch = useDispatch()
 
     const [checked, setChecked] = useState(false);
@@ -82,6 +84,9 @@ const ModalData = ({ show, handleClose, handleBack }) => {
         return new Promise((resolve) => setTimeout(resolve, time));
     }
 
+    const userId = localStorage.getItem('userId')
+    console.log("user: " + userId)
+    
     const onClick = async e => {
         e.preventDefault()
         CartList = []
@@ -95,7 +100,7 @@ const ModalData = ({ show, handleClose, handleBack }) => {
                 lineTotal: cartState.Lista[i].price * cartState.Lista[i].quantity
             })
         }
-        saveorder(name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, CartList, setError)
+        saveorder(name, nit, paymentType, card, codeCard, securityCode, expirationDate, direccion, amount, CartList, userId, setError)
         dispatch(CartClean())
     }
 
