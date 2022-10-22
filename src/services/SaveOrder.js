@@ -14,6 +14,7 @@ const saveOrder = async (
   direccion,
   amount,
   CartList,
+  userId,
 ) => {
   try {
     // SAVE PAYMENT BEFORE ORDER
@@ -35,7 +36,7 @@ const saveOrder = async (
       observations: '',
       date: new Date(),
       OrderDetails: CartList,
-      userId: 1,
+      userId,
       PaymentId: data.data.data.id,
     })
 

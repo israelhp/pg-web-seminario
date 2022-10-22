@@ -75,6 +75,11 @@ const NavBarData = () => {
                       Articulos
                     </Link>
                   </li>
+                  <li className="nav-item">
+                    <Link to="ordenes" className="nav-link">
+                      Ordenes
+                    </Link>
+                  </li>
                 </>
               ) : (
                 <>

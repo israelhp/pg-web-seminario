@@ -9,6 +9,7 @@ import store from './redux/store'
 import Root from './pages/Root/Root'
 // import { Articulos } from './pages/Articles/Articulos'
 import { GetProducts } from './pages/Articles/api'
+import { GetOrdenes, GetOrders } from './pages/Orders/api'
 import Home from './pages/Home/Home'
 import Profile from './pages/Profile/Profile'
 import Order from './pages/Order/Order'
@@ -27,6 +28,7 @@ function App() {
               <Route index element={<MisOrdenes />} />
               <Route path="ordenes" element={<Orders />} />
             </Route>
+            <Route path="ordenes" element={<GetOrders />} />
           </Route>
           <Route path="accounts" element={<LayoutAccounts />}>
             <Route index element={<Login />} />
