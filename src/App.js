@@ -15,6 +15,7 @@ import Profile from './pages/Profile/Profile'
 import Order from './pages/Order/Order'
 import MisOrdenes from './pages/MisOrdenes/MisOrdenes'
 import Orders from './pages/Orders/Orders'
+import Reset from './pages/Reset/Reset'
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="accounts" element={<LayoutAccounts />}>
             <Route index element={<Login />} />
             <Route path="signup" element={<Signup />} />
+            <Route path="password/reset" element={<Reset />} />
           </Route>
           <Route path="*" element={<NoMatch />} />
         </Routes>

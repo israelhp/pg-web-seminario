@@ -12,6 +12,17 @@ const getOrders = async (userId, statusId) => {
   }
 }
 
+const getOrdersByUserId = async userId => {
+  try {
+    const data = await axios.get(
+      `${process.env.REACT_APP_API_URL}/OrderDetailByUserId?userId=${userId}`,
+    )
+    return data
+  } catch (e) {
+    return e.response
+  }
+}
+
 const getDetailOrder = async orderId => {
   try {
     const data = await axios.get(
@@ -38,4 +49,4 @@ const putOrder = async (orderId, newStatus, userId) => {
   )
   return { data: 1 }
 }
-export default { getOrders, putOrder, getDetailOrder }
+export default { getOrders, putOrder, getDetailOrder, getOrdersByUserId }

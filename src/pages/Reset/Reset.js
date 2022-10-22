@@ -1,41 +1,35 @@
-/* eslint-disable no-unused-vars */
 import '../../styles/styles.css'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Button from 'react-bootstrap/Button'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Alert from 'react-bootstrap/Alert'
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import useAuth from '../../hooks/useAuth'
-import { loginAuth } from '../../redux/states/auth'
+import useResponse from '../../hooks/useRegister'
+import { useState } from 'react'
 
-const Login = () => {
-  const navigate = useNavigate()
+const Reset = () => {
+  const { signup, load, res } = useResponse()
   const [error, setError] = useState(0)
   const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const { login, res, load } = useAuth()
-  const authState = useSelector(store => store.auth)
-  const dispatch = useDispatch()
+  const [role, setRole] = useState('')
+  const [dpi, setDpi] = useState('')
 
-  useEffect(() => {
-    if (authState.token !== null) navigate('/')
-  }, [authState])
+  const clean = () => {
+    setEmail('')
+    setUsername('')
+    setPassword('')
+    setRole('')
+    setDpi('')
+  }
 
   const onClick = e => {
     e.preventDefault()
-    login(email, password, setError).then(response => {
-      dispatch(
-        loginAuth({
-          token: response.token,
-          role: `${response.role}`,
-          userId: response.userId,
-        }),
-      )
-    })
+    signup(email, username, password, role, dpi, setError)
+    clean()
   }
 
   return (
@@ -46,11 +40,25 @@ const Login = () => {
             <Container fluid className="mb-3">
               <Row>
                 <Col>
-                  <h1 className="text-center text-primary"> Iniciar sesion </h1>
+                  <h1 className="text-center text-primary">
+                    {' '}
+                    Cambiar contraseña{' '}
+                  </h1>
                 </Col>
               </Row>
             </Container>
             <Form onSubmit={onClick}>
+              <Form.Group className="mb-3" controlId="formBasicDpi">
+                <Form.Control
+                  required
+                  type="number"
+                  placeholder="DPI"
+                  value={dpi}
+                  onChange={e => {
+                    if (e.target.value.length <= 13) setDpi(e.target.value)
+                  }}
+                />
+              </Form.Group>
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Control
                   required
@@ -60,6 +68,17 @@ const Login = () => {
                   onChange={e => setEmail(e.target.value)}
                 />
               </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formBasicUsername">
+                <Form.Control
+                  required
+                  type="text"
+                  placeholder="Nombre del usuario"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                />
+              </Form.Group>
+
               <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Control
                   required
@@ -67,25 +86,42 @@ const Login = () => {
                   placeholder="Contraseña"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
+                  pattern="[A-Za-z][A-Za-z0-9]*[0-9][A-Za-z0-9]*"
+                  title="Una contraseña válida es un conjuto de caracteres, donde cada uno consiste de una letra mayúscula o minúscula, o un dígito. La contraseña debe empezar con una letra y contener al menor un dígito"
                 />
               </Form.Group>
-              {error === 1 ? (
-                <Alert className="mt-4" variant="danger">
+              <Form.Select
+                required
+                className="text-secondary mb-4"
+                aria-label="Default select example"
+                value={role}
+                onChange={e => setRole(e.target.value)}
+              >
+                <option>Tipo de usuario</option>
+                <option value="1">Cliente</option>
+                <option value="2">Repartidor</option>
+              </Form.Select>
+              {error === 1 || error === 2 ? (
+                <Alert variant={error === 2 ? 'success' : 'danger'}>
+                  <Alert.Heading>
+                    {error === 2 ? 'Completado' : 'Error '}
+                  </Alert.Heading>
                   <p>{res.message}</p>
                 </Alert>
               ) : (
                 ''
               )}
+
               <div className="mt-4 pt-2">
                 <Container>
                   <Row>
                     <Button
+                      disabled={load === 1 ? true : 0}
                       type="submit"
                       variant="primary"
                       size="lg"
-                      disabled={load === 1 ? true : 0}
                     >
-                      Iniciar sesion
+                      Confirmar
                     </Button>
                   </Row>
                 </Container>
@@ -93,9 +129,9 @@ const Login = () => {
                   <p className="text-center fw-bold mx-3 mb-0"></p>
                 </div>
                 <p className="medium fw-bold mt-2 pt-1 mb-0 text-center">
-                  ¿Tienes tu cuenta?{' '}
-                  <Link to="signup" className="link-danger">
-                    Registrate
+                  ¿Quieres ingresar a tu usuario?{' '}
+                  <Link to="../" className="link-danger">
+                    Inicia sesion
                   </Link>
                 </p>
               </div>
@@ -123,4 +159,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Reset

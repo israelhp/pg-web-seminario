@@ -7,6 +7,13 @@ const useOrder = () => {
   const [res, setRes] = useState({ message: '' })
   const [load, setLoad] = useState(0)
 
+  const getOrdersByUserId = useCallback(async userId => {
+    const data = await orderServices.getOrdersByUserId(userId).then(res => {
+      return res.data.data
+    })
+    return data
+  })
+
   const getOrdersDetails = useCallback(async orderId => {
     setLoad(1)
     const data = await orderServices
@@ -85,6 +92,7 @@ const useOrder = () => {
     getOrders,
     putOrders,
     getOrdersDetails,
+    getOrdersByUserId,
   }
 }
 

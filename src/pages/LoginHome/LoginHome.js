@@ -78,14 +78,6 @@ const LoginHome = () => {
                   onChange={e => setPassword(e.target.value)}
                 />
               </Form.Group>
-              <div className="d-flex justify-content-between align-items-center">
-                <Form.Group controlId="formBasicCheckbox">
-                  <Form.Check type="checkbox" label="Remember me" />
-                </Form.Group>
-                <Link to="password/reset" className="text-body">
-                  Forgot password?
-                </Link>
-              </div>
               {error === 1 ? (
                 <Alert className="mt-4" variant="danger">
                   <p>{res.message}</p>
@@ -121,20 +113,7 @@ const LoginHome = () => {
         </Row>
       </Container>
       <div className="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
-        <div>
-          <a href="#!" className="text-white me-4">
-            <i className="fab fa-facebook-f"></i>
-          </a>
-          <a href="#!" className="text-white me-4">
-            <i className="fab fa-twitter"></i>
-          </a>
-          <a href="#!" className="text-white me-4">
-            <i className="fab fa-google"></i>
-          </a>
-          <a href="#!" className="text-white">
-            <i className="fab fa-linkedin-in"></i>
-          </a>
-        </div>
+        <div></div>
       </div>
     </section>
   )
