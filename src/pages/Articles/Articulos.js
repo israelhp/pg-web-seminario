@@ -7,7 +7,18 @@ import { formatCurrency } from '../../utilities/formatCurrency';
 import { CartSet, CartSum, CartDel } from '../../redux/states/Cart'
 import { persistCartState, removeLocalStorage } from '../../utilities/persistInfo'
 
-
+function setBlobImages(photo){
+    if(photo === undefined){
+        console.log("undefined");
+        return undefined
+    }
+    else{
+        console.log(photo)
+        var binaryData = [];
+        binaryData.push(photo);
+        return URL.createObjectURL(new Blob(binaryData))
+    }
+}
 
 export const Articulos = (props) => {
     const cartState = useSelector(store => store.cart)
@@ -74,10 +85,13 @@ export const Articulos = (props) => {
     const DeteleFromCart = e => {
         dispatch(CartDel({ id: props.chars.id, quantity, name: props.chars.name, price: props.chars.salePrice }))
     }
+
+
+
     return (
         <div className='col p-4'>
             <div className="card" style={{ width: '18rem' }}>
-                <img src={gato} className="card-img-top" alt="..." />
+                <img src={"data:image/png;base64," + props.chars.Image} className="card-img-top blob-to-image" alt="..." />
                 <div className="card-body">
                     <h5 className="card-title fs-2">{props.chars.name} </h5>
                     <h5 className="ms-2 text-muted">{formatCurrency(props.chars.salePrice)} </h5>
