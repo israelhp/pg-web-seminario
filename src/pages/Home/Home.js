@@ -86,9 +86,9 @@ const Home = () => {
                     <div className="col-md p-4" key={product.id}>
                       <Card style={{ width: '18rem' }}>
                         <Card.Img
-                          className="card-image"
+                          className="card-image blob-to-image"
                           variant="top"
-                          src={Carrucel1}
+                          src={'data:image/png;base64,' + product.Image}
                         />
                         <Card.Body>
                           <Card.Title>{product.name}</Card.Title>
@@ -129,8 +129,8 @@ const Home = () => {
                         </Col>
                         <Col className="col-md-5 order-md-1">
                           <img
-                            className="featurette-image img-fluid mx-auto"
-                            src={Carrucel1}
+                            className="featurette-image img-fluid mx-auto blob-to-image"
+                            src={'data:image/png;base64,' + product.Image}
                             alt="Generic placeholder image"
                           />
                         </Col>
@@ -158,8 +158,8 @@ const Home = () => {
                         </Col>
                         <Col className="col-md-5 order-md-2">
                           <img
-                            className="featurette-image img-fluid mx-auto"
-                            src={Carrucel2}
+                            className="featurette-image img-fluid mx-auto blob-to-image"
+                            src={'data:image/png;base64,' + product.Image}
                             alt="Generic placeholder image"
                           />
                         </Col>
@@ -177,20 +177,7 @@ const Home = () => {
             })}
       </Container>
       <div className="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
-        <div>
-          <a href="#!" className="text-white me-4">
-            <i className="fab fa-facebook-f"></i>
-          </a>
-          <a href="#!" className="text-white me-4">
-            <i className="fab fa-twitter"></i>
-          </a>
-          <a href="#!" className="text-white me-4">
-            <i className="fab fa-google"></i>
-          </a>
-          <a href="#!" className="text-white">
-            <i className="fab fa-linkedin-in"></i>
-          </a>
-        </div>
+        <div></div>
       </div>
     </>
   )
