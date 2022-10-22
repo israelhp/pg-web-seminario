@@ -11,6 +11,9 @@ import Root from './pages/Root/Root'
 import { GetProducts } from './pages/Articles/api'
 import Home from './pages/Home/Home'
 import Profile from './pages/Profile/Profile'
+import Order from './pages/Order/Order'
+import MisOrdenes from './pages/MisOrdenes/MisOrdenes'
+import Orders from './pages/Orders/Orders'
 
 function App() {
   return (
@@ -19,8 +22,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Root />}>
             <Route index element={<Home />} />
-            <Route path="perfil" element={<Profile />} />
             <Route path="articulos" element={<GetProducts />} />
+            <Route path="pedidos/" element={<Order />}>
+              <Route index element={<MisOrdenes />} />
+              <Route path="ordenes" element={<Orders />} />
+            </Route>
           </Route>
           <Route path="accounts" element={<LayoutAccounts />}>
             <Route index element={<Login />} />

@@ -31,8 +31,8 @@ const Login = () => {
       dispatch(
         loginAuth({
           token: response.token,
-          role: response.role,
-          userId: response.id,
+          role: `${response.role}`,
+          userId: response.userId,
         }),
       )
     })
