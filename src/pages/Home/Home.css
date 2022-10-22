@@ -1,0 +1,30 @@
+.carrucel {
+  height: 500px;
+}
+
+.carrucel-image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.card-image {
+  height: 180px;
+}
+
+.part-info {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+.prueba {
+  background-color: red;
+}
+
+.prueba {
+  background-color: blue;
+}
+
+@media (max-width: 575.98px) {
+}

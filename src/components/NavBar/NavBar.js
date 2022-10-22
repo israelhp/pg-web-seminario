@@ -8,6 +8,7 @@ import { logoutAuth } from '../../redux/states/auth'
 import { Articulos } from '../../pages/Articles/Articulos'
 import Modal from '../../components/modal/Modal'
 import PayModal from '../../components/modal/PayModal'
+import NavDropdown from 'react-bootstrap/NavDropdown'
 
 const NavBarData = () => {
   const cartState = useSelector(store => store.cart)
@@ -16,8 +17,6 @@ const NavBarData = () => {
   const dispatch = useDispatch()
   const [error, setError] = useState(0)
   useEffect(() => {}, [cartState, authState])
-
-  // console.log(authState)
 
   const onClickLogin = e => {
     logout(authState.token, setError)
@@ -46,10 +45,21 @@ const NavBarData = () => {
           <Link className="navbar-brand" href="../">
             Venta
           </Link>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </Button>
+
           <Navbar.Collapse>
             <Nav className="me-auto mb-2 mb-lg-0 ms-lg-4">
-              {authState.role === 1 ? (
+              {authState.role === '1' ? (
                 <>
                   <li className="nav-item">
                     <Link
@@ -58,11 +68,6 @@ const NavBarData = () => {
                       to="/"
                     >
                       Inicio
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to="perfil">
-                      Perfil
                     </Link>
                   </li>
                   <li className="nav-item">
@@ -82,15 +87,28 @@ const NavBarData = () => {
                     <Link
                       className="nav-link active"
                       aria-current="page"
-                      href="/"
+                      to="/"
                     >
                       Inicio
                     </Link>
                   </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" href="#!">
-                      Pedidos
-                    </Link>
+                  <li>
+                    <NavDropdown title="Pedidos" id="navbarScrollingDropdown">
+                      <NavDropdown.Item>
+                        <Link className="nav-link" to="pedidos">
+                          Mis Ordenes
+                        </Link>
+                      </NavDropdown.Item>
+                      <NavDropdown.Item>
+                        <Link className="nav-link" to="pedidos/ordenes">
+                          Ordenes
+                        </Link>
+                      </NavDropdown.Item>
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item href="#action5">
+                        Something else here
+                      </NavDropdown.Item>
+                    </NavDropdown>
                   </li>
                 </>
               )}
@@ -102,7 +120,7 @@ const NavBarData = () => {
             >
               Cerrar sesion
             </button>
-            {authState.role === 1 ? (
+            {authState.role === '1' ? (
               <button
                 className="btn btn-outline-dark"
                 type="submit"

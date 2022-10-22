@@ -31,8 +31,8 @@ const Login = () => {
       dispatch(
         loginAuth({
           token: response.token,
-          role: response.role,
-          userId: response.id,
+          role: `${response.role}`,
+          userId: response.userId,
         }),
       )
     })
@@ -69,14 +69,6 @@ const Login = () => {
                   onChange={e => setPassword(e.target.value)}
                 />
               </Form.Group>
-              <div className="d-flex justify-content-between align-items-center">
-                <Form.Group controlId="formBasicCheckbox">
-                  <Form.Check type="checkbox" label="Remember me" />
-                </Form.Group>
-                <Link to="password/reset" className="text-body">
-                  Forgot password?
-                </Link>
-              </div>
               {error === 1 ? (
                 <Alert className="mt-4" variant="danger">
                   <p>{res.message}</p>

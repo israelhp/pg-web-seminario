@@ -4,12 +4,20 @@ import LoginHome from '../LoginHome/LoginHome'
 import Home from '../Home/Home'
 import { useEffect } from 'react'
 import NavBar from '../../components/NavBar/NavBar'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
+import usePermissions from '../../hooks/usePermissions'
 
 const Root = () => {
+  const { location, validatePermissions } = usePermissions()
   const authState = useSelector(store => store.auth)
+  const navigate = useNavigate()
 
-  useEffect(() => {}, [authState.token, authState.role])
+  useEffect(() => {
+    navigate('/')
+  }, [authState.token, authState.role])
+  useEffect(() => {
+    validatePermissions(authState)
+  }, [location])
 
   return (
     <>
