@@ -85,7 +85,6 @@ const ModalData = ({ show, handleClose, handleBack }) => {
     }
 
     const userId = localStorage.getItem('userId')
-    console.log("user: " + userId)
     
     const onClick = async e => {
         e.preventDefault()
