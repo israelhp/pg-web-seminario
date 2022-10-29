@@ -105,9 +105,6 @@ const NavBarData = () => {
                         </Link>
                       </NavDropdown.Item>
                       <NavDropdown.Divider />
-                      <NavDropdown.Item href="#action5">
-                        Something else here
-                      </NavDropdown.Item>
                     </NavDropdown>
                   </li>
                 </>
